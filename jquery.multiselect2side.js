@@ -56,8 +56,8 @@
 			var htmlToAdd = "<div class='ms2side__div'>" +
 				((o.selectedPosition != 'right' && o.moveOptions) ? divUpDown : "") +
 				"<div class='ms2side__select'>" +
-				(o.labelsx ? ("<div class='ms2side__header'>" + o.labelsx + "</div>") : "") +
-				"</select>" +
+				((o.labelsx || leftSearch != false) ? ("<div class='ms2side__header'>" + (leftSearch != false ? leftSearch : o.labelsx) + "</div>") : "") +
+				"<select title='" + o.labelsx + "' name='" + nameSx + "' id='" + nameSx + "' size='" + size + "' multiple='multiple' ></select>" +
 				"</div>" +
 				"<div class='ms2side__options' style='width:75%;'>" +
 				"<table width='100%' border='0' cellspacing='0' cellpadding='0' class='MultiSelectButtonTable'>" +
@@ -78,8 +78,8 @@
 				"</table>" +
 				"</div>" +
 				"<div class='ms2side__select'>" +
-				(o.labeldx ? ("<div class='ms2side__header'>" + o.labeldx + "</div>") : "") +
-				"</select>" +
+				((o.labeldx || rightSearch != false) ? ("<div class='ms2side__header'>" + (rightSearch != false ? rightSearch : o.labeldx) + "</div>") : "") +
+				"<select title='" + o.labeldx + "' name='" + nameDx + "' id='" + nameDx + "' size='" + size + "' multiple='multiple' ></select>" +
 				"</div>" +
 				((o.selectedPosition == 'right' && o.moveOptions) ? divUpDown : "") +
 				"</div>";
@@ -270,7 +270,7 @@
 					setTimeout(function() {
 						leftSel.children().remove();
 						if (searchV == "") {
-							toSearch.clone().appendTo(leftSel).removeAttr("selected");
+							toSearch.clone().appendTo(leftSel).prop("selected", false);
 							removeFilter.hide();
 						}
 						else {
@@ -283,7 +283,7 @@
 									find = myText.toUpperCase().indexOf(searchV.toUpperCase());
 
 								if (find != -1)
-									$(this).clone().appendTo(leftSel).removeAttr("selected");
+									$(this).clone().appendTo(leftSel).prop("selected", false);
 							});
 
 							if (leftSel.children().length == 0)
@@ -328,8 +328,8 @@
                 // jQuery browser is removed, check now requires html boilerplate
                 // conditions html comments https://github.com/h5bp/html5-boilerplate/blob/v4.3.0/doc/html.md
 				if (!(html.hasClass('ie6') || html.hasClass('le-ie7') || html.hasClass('ielte7'))) {
-					leftSel.find("option").eq(0).attr("selected", true);
-					rightSel.children().removeAttr("selected");
+					leftSel.find("option").eq(0).prop("selected", true);
+					rightSel.children().prop("selected", false);
 				}
 
 				// ON CHANGE SORT SELECTED OPTIONS
@@ -346,8 +346,7 @@
 							// AFTER ADD ON ORIGINAL AND RIGHT SELECT
 							selectDx.each(function() {
 								rightSel.append($(this).clone());
-								$(this).appendTo(el).attr("selected", true);
-								//el.append($(this).attr("selected", true));		HACK IE6
+								$(this).appendTo(el).prop("selected", true);
 							});
 							nLastAutosort = selectDx.length;
 						}
@@ -423,7 +422,7 @@
 
 						if (o.maxSelected < 0 || rightSel.children().size() < o.maxSelected) {
 							$(this).remove().appendTo(rightSel);
-							el.find("[value='" + $(selected).val() + "']").remove().appendTo(el).attr("selected", true);
+							el.find("[value='" + $(selected).val() + "']").remove().appendTo(el).prop("selected", true);
 						}
 					});
 					$(this).trigger('change');
@@ -433,7 +432,7 @@
 				rightSel.dblclick(function () {
 					$(this).find("option:selected").each(function(i, selected){
 						$(this).remove().appendTo(leftSel);
-						el.find("[value='" + $(selected).val() + "']").removeAttr("selected").remove().appendTo(el);
+						el.find("[value='" + $(selected).val() + "']").prop("selected", false).remove().appendTo(el);
 					});
 					$(this).trigger('change');
 
@@ -449,7 +448,7 @@
 						if ($(this).hasClass("AddOne")) {
 							leftSel.find("option:selected").each(function(i, selected){
 								$(this).remove().appendTo(rightSel);
-								el.find("[value='" + $(selected).val() + "']").remove().appendTo(el).attr("selected", true);
+								el.find("[value='" + $(selected).val() + "']").remove().appendTo(el).prop("selected", true);
 							});
 						}
 						else if ($(this).hasClass("AddAll")) {	// ALL SELECTED
@@ -457,18 +456,17 @@
 							if (removeFilter.is(":visible") || (searchSelect.length > 0 && searchSelect.val() != "__null__"))
 								leftSel.children().each(function(i, selected){
 									$(this).remove().appendTo(rightSel);
-									el.find("[value='" + $(selected).val() + "']").remove().appendTo(el).attr("selected", true);
+									el.find("[value='" + $(selected).val() + "']").remove().appendTo(el).prop("selected", true);
 								});
 							else {
 								leftSel.children().remove().appendTo(rightSel);
-								el.find('option').attr("selected", true);
-								// el.children().attr("selected", true); -- PROBLEM WITH OPTGROUP
+								el.find('option').prop("selected", true);
 							}
 						}
 						else if ($(this).hasClass("RemoveOne")) {
 							rightSel.find("option:selected").each(function(i, selected){
 								$(this).remove().appendTo(leftSel);
-								el.find("[value='" + $(selected).val() + "']").remove().appendTo(el).removeAttr("selected");
+								el.find("[value='" + $(selected).val() + "']").remove().appendTo(el).prop("selected", false);
 							});
 							// TRIGGER CLICK ON REMOVE FILTER (IF EXIST)
 							removeFilter.click();
@@ -478,7 +476,7 @@
 						else if ($(this).hasClass("RemoveAll")) {	// ALL REMOVED
 							rightSel.children().appendTo(leftSel);
 							rightSel.children().remove();
-							el.find('option').removeAttr("selected");
+							el.find('option').prop("selected", false);
 							//el.children().removeAttr("selected"); -- PROBLEM WITH OPTGROUP
 							// TRIGGER CLICK ON REMOVE FILTER (IF EXIST)
 							removeFilter.click();
@@ -503,8 +501,8 @@
 							el.find("option:selected").remove();
 							// AFTER ADD ON ORIGINAL AND RIGHT SELECT
 							selectDx.each(function() {
-								rightSel.append($(this).clone().attr("selected", true));
-								el.append($(this).attr("selected", true));
+								rightSel.append($(this).clone().prop("selected", true));
+								el.append($(this).prop("selected", true));
 							});
 						}
 						else if ($(this).hasClass("MoveUp")) {
