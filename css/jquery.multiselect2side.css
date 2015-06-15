@@ -6,6 +6,8 @@
 	background : url('') repeat-x; /* HACK FOR CHROME */
 }
 
+.MultiSelectButtonTable td {padding:5px 2px;}
+
 .ms2side__select {
 	float: left;
 }
