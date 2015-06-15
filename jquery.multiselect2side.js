@@ -20,6 +20,83 @@
 	};
 
 	var methods = {
+		_getHorizontalTwoSidedSelectHtml: function(o, divUpDown, leftSearch, nameSx, size, rightSearch, nameDx)
+		{
+			var htmlToAdd =
+				"<div class='ms2side__div'>" +
+				((o.selectedPosition != 'right' && o.moveOptions) ? divUpDown : "") +
+				"<div class='ms2side__select'>" +
+				((o.labelsx || leftSearch != false) ? ("<div class='ms2side__header'>" + (leftSearch != false ? leftSearch : o.labelsx) + "</div>") : "") +
+				"<select title='" + o.labelsx + "' name='" + nameSx + "' id='" + nameSx + "' size='" + size + "' multiple='multiple' ></select>" +
+				"</div>" +
+				"<div class='ms2side__options'>" +
+				((o.selectedPosition == 'right')
+					?
+					("<p class='AddOne' title='Add Selected'>&rsaquo;</p>" +
+					"<p class='AddAll' title='Add All'>&raquo;</p>" +
+					"<p class='RemoveOne' title='Remove Selected'>&lsaquo;</p>" +
+					"<p class='RemoveAll' title='Remove All'>&laquo;</p>")
+					:
+					("<p class='AddOne' title='Add Selected'>&lsaquo;</p>" +
+					"<p class='AddAll' title='Add All'>&laquo;</p>" +
+					"<p class='RemoveOne' title='Remove Selected'>&rsaquo;</p>" +
+					"<p class='RemoveAll' title='Remove All'>&raquo;</p>")
+				) +
+				"</div>" +
+				"<div class='ms2side__select'>" +
+				((o.labeldx || rightSearch != false) ? ("<div class='ms2side__header'>" + (rightSearch != false ? rightSearch : o.labeldx) + "</div>") : "") +
+				"<select title='" + o.labeldx + "' name='" + nameDx + "' id='" + nameDx + "' size='" + size + "' multiple='multiple' ></select>" +
+				"</div>" +
+				((o.selectedPosition == 'right' && o.moveOptions) ? divUpDown : "") +
+				"</div>";
+			return htmlToAdd;
+		},
+		_getVerticalTwoSidedSelectHtml: function(o, divUpDown, leftSearch, nameSx, size, rightSearch, nameDx)
+		{
+			var htmlToAdd = "<div class='ms2side__div'>" +
+				((o.selectedPosition != 'right' && o.moveOptions) ? divUpDown : "") +
+				"<div class='ms2side__select'>" +
+				(o.labelsx ? ("<div class='ms2side__header'>" + o.labelsx + "</div>") : "") +
+				"</select>" +
+				"</div>" +
+				"<div class='ms2side__options' style='width:75%;'>" +
+				"<table width='100%' border='0' cellspacing='0' cellpadding='0' class='MultiSelectButtonTable'>" +
+				"<tr valign='middle'>" +
+				((o.selectedPosition == 'right')
+					?
+					("<td><p class='AddOne' title='Add Selected'>&rsaquo;</p></td>" +
+					"<td><p class='AddAll' title='Add All'>&raquo;</p></td>" +
+					"<td><p class='RemoveOne' title='Remove Selected'>&lsaquo;</p></td>" +
+					"<td><p class='RemoveAll' title='Remove All'>&laquo;</p></td>")
+					:
+					("<td><p class='AddOne' title='Add Selected'>&lsaquo;</p></td>" +
+					"<td><p class='AddAll' title='Add All'>&laquo;</p></td>" +
+					"<td><p class='RemoveOne' title='Remove Selected'>&rsaquo;</p></td>" +
+					"<td><p class='RemoveAll' title='Remove All'>&raquo;</p></td>")
+				) +
+				"</tr>" +
+				"</table>" +
+				"</div>" +
+				"<div class='ms2side__select'>" +
+				(o.labeldx ? ("<div class='ms2side__header'>" + o.labeldx + "</div>") : "") +
+				"</select>" +
+				"</div>" +
+				((o.selectedPosition == 'right' && o.moveOptions) ? divUpDown : "") +
+				"</div>";
+			return htmlToAdd;
+		},
+		_getTwoSidedSelectHtml: function (o, divUpDown, leftSearch, nameSx, size, rightSearch, nameDx) {
+			var htmlToAdd;
+			if (o.horizontal)
+			{
+				htmlToAdd = this._getHorizontalTwoSidedSelectHtml(o, divUpDown, leftSearch, nameSx, size, rightSearch, nameDx);
+			}
+			else
+			{
+				htmlToAdd = this._getVerticalTwoSidedSelectHtml(o, divUpDown, leftSearch, nameSx, size, rightSearch, nameDx);
+			}
+			return htmlToAdd;
+		},
 		init : function(options) {
 			var o = {
 				selectedPosition: 'right',
@@ -38,7 +115,8 @@
 				caseSensitive: false,
 				delay: 200,
 				optGroupSearch: false,
-				minSize: 6
+				minSize: 6,
+				horizontal: true
 			};
 
 			return this.each(function () {
@@ -105,34 +183,8 @@
 						rightSearch = ss;
 				}
 
-				// CREATE NEW ELEMENT (AND HIDE IT) AFTER THE HIDDED ORGINAL SELECT
-				var htmlToAdd = 
-					"<div class='ms2side__div'>" +
-							((o.selectedPosition != 'right' && o.moveOptions) ? divUpDown : "") +
-						"<div class='ms2side__select'>" +
-							((o.labelsx || leftSearch != false) ? ("<div class='ms2side__header'>" + (leftSearch != false ? leftSearch : o.labelsx) + "</div>") : "") +
-							"<select title='" + o.labelsx + "' name='" + nameSx + "' id='" + nameSx + "' size='" + size + "' multiple='multiple' ></select>" +
-						"</div>" +
-						"<div class='ms2side__options'>" +
-							((o.selectedPosition == 'right')
-							?
-							("<p class='AddOne' title='Add Selected'>&rsaquo;</p>" +
-							"<p class='AddAll' title='Add All'>&raquo;</p>" +
-							"<p class='RemoveOne' title='Remove Selected'>&lsaquo;</p>" +
-							"<p class='RemoveAll' title='Remove All'>&laquo;</p>")
-							:
-							("<p class='AddOne' title='Add Selected'>&lsaquo;</p>" +
-							"<p class='AddAll' title='Add All'>&laquo;</p>" +
-							"<p class='RemoveOne' title='Remove Selected'>&rsaquo;</p>" +
-							"<p class='RemoveAll' title='Remove All'>&raquo;</p>")
-							) +
-						"</div>" +
-						"<div class='ms2side__select'>" +
-							((o.labeldx || rightSearch != false) ? ("<div class='ms2side__header'>" + (rightSearch != false ? rightSearch : o.labeldx) + "</div>") : "") +
-							"<select title='" + o.labeldx + "' name='" + nameDx + "' id='" + nameDx + "' size='" + size + "' multiple='multiple' ></select>" +
-						"</div>" +
-						((o.selectedPosition == 'right' && o.moveOptions) ? divUpDown : "") +
-					"</div>";
+				// CREATE NEW ELEMENT (AND HIDE IT) AFTER THE HIDDEN ORIGINAL SELECT
+				var htmlToAdd = this._getTwoSidedSelectHtml(o, divUpDown, leftSearch, nameSx, size, rightSearch, nameDx);
 				el.after(htmlToAdd).hide();
 
 				// ELEMENTS
@@ -392,7 +444,7 @@
 				});
 
 				// CLICK ON OPTION
-				$(this).next().find('.ms2side__options').children().click(function () {
+				$(this).next().find('.AddOne, .AddAll, .RemoveOne, .RemoveAll').click(function() {
 					if (!$(this).hasClass("ms2side__hide")) {
 						if ($(this).hasClass("AddOne")) {
 							leftSel.find("option:selected").each(function(i, selected){
