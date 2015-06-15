@@ -48,45 +48,56 @@
 			});
 		},
 
-		removeOption: function(existingOptionValue) {
+		removeOption: function(existingOption) {
 
 			// the this keyword is a jQuery object
 			return this.each(function() {
 
 				// the this keyword is a DOM element
 				var el = $(this);
-				var originalName = el.attr("name");
-				if (originalName.indexOf('[') != -1)
-					originalName = originalName.substring(0, originalName.indexOf('['));
 
-				var allSel = el.next().find("select");
-				allSel.find('option[value="' + existingOptionValue + '"]').remove();
-				el.find('option[value="' + existingOptionValue + '"]').remove();
+				var useOptionIDs = el.data('options').useOptionIDs;
+
+				var allSel = $(this).next().find("select");
+				if (useOptionIDs) {
+					allSel.find('option[id="' + existingOption + '"]').remove();
+					el.find('option[id="' + existingOption + '"]').remove();
+				}
+				else {
+					allSel.find('option[value="' + existingOption + '"]').remove();
+					el.find('option[value="' + existingOption + '"]').remove();
+				}
 			});
 		},
 
-		updateOption: function(existingOptionTextSubstr, newOptionText, newOptionValue) {
-
+		updateOption: function(existingOption, newOptionText, newOptionValue) {
 			// the this keyword is a jQuery object
 			return this.each(function() {
 
 				// the this keyword is a DOM element
 				var el = $(this);
-				var originalName = el.attr("name");
-				if (originalName.indexOf('[') != -1)
-					originalName = originalName.substring(0, originalName.indexOf('['));
 
-				var o = el.data('options');
+				var useOptionIDs = el.data('options').useOptionIDs;
 
 				var allSel = el.next().find("select");
-				var leftSel = (o.selectedPosition == 'right') ? allSel.eq(0) : allSel.eq(1);
-				var rightSel = (o.selectedPosition == 'right') ? allSel.eq(1) : allSel.eq(0);
 
-				var changedElement = allSel.find('option:contains("' + existingOptionTextSubstr + '")');
+				var changedElement = '';
+				if (useOptionIDs) {
+					changedElement = allSel.find('option[id="' + existingOption + '"]');
+				}
+				else {
+					changedElement = allSel.find('option:contains("' + existingOption + '")');
+				}
 				changedElement.text(newOptionText);
 				changedElement.val(newOptionValue);
 
-				var origElement = el.find('option:contains("' + existingOptionTextSubstr + '")');
+				var origElement = '';
+				if (useOptionIDs) {
+					origElement = el.find('option[id="' + existingOption + '"]');
+				}
+				else {
+					origElement = el.find('option:contains("' + existingOption + '")');
+				}
 				origElement.text(newOptionText);
 				origElement.val(newOptionValue);
 			});
@@ -102,12 +113,18 @@
 				// the this keyword is a DOM element
 				var el = $(this);
 				var o = el.data('options');
+				var useOptionIDs = o.useOptionIDs;
 
 				var allSel = el.next().find("select");
 				var rightSel = (o.selectedPosition == 'right') ? allSel.eq(1) : allSel.eq(0);
 				var jqueryObjArray = rightSel.find("option").map(
 					function() {
-						return $(this).val();
+						if (useOptionIDs) {
+							return $(this).attr('id');
+						}
+						else {
+							return $(this).val();
+						}
 					}
 				);
 				rval = jqueryObjArray.get().join(',');
@@ -125,12 +142,18 @@
 				// the this keyword is a DOM element
 				var el = $(this);
 				var o = el.data('options');
+				var useOptionIDs = o.useOptionIDs;
 
 				var allSel = el.next().find("select");
 				var leftSel = (o.selectedPosition == 'right') ? allSel.eq(0) : allSel.eq(1);
 				var jqueryObjArray = leftSel.find("option").map(
 					function() {
-						return $(this).val();
+						if (useOptionIDs) {
+							return $(this).attr('id');
+						}
+						else {
+							return $(this).val();
+						}
 					}
 				);
 				rval = jqueryObjArray.get().join(',');
@@ -147,7 +170,7 @@
 				var el = $(this);
 
 				var o = el.data('options');
-
+				var useOptionIDs = o.useOptionIDs;
 				var allSel = el.next().find("select");
 				var leftSel = (o.selectedPosition == 'right') ? allSel.eq(0) : allSel.eq(1);
 				var rightSel = (o.selectedPosition == 'right') ? allSel.eq(1) : allSel.eq(0);
@@ -158,11 +181,24 @@
 				// reorder background select
 				var unselectedOptionArray = unselectedOptions.split(",");
 				for (var i = unselectedOptionArray.length - 1; i >= 0; i--) {
-					el.find("[value='" + unselectedOptionArray[i] + "']").remove().prependTo(el);
+
+					if (useOptionIDs) {
+						el.find("[id='" + unselectedOptionArray[i] + "']").remove().prependTo(el);
+					}
+					else {
+						el.find("[value='" + unselectedOptionArray[i] + "']").remove().prependTo(el);
+					}
 				}
 				var selectedOptionArray = selectedOptions.split(",");
 				for (var i = 0; i < selectedOptionArray.length; i++) {
-					el.find("[value='" + selectedOptionArray[i] + "']").prop("selected", true).remove().appendTo(el);
+
+					if (useOptionIDs) {
+						el.find("[id='" + selectedOptionArray[i] + "']").prop("selected", true).remove().appendTo(el);
+					}
+					else {
+						el.find("[value='" + selectedOptionArray[i] + "']").prop("selected", true).remove().appendTo(el);
+					}
+
 				}
 
 				el.multiselect2side('update');
@@ -281,6 +317,7 @@
 				labelsx: 'Available',
 				labeldx: 'Selected',
 				maxSelected: -1,
+				useOptionIDs: false,
 				autoSort: false,
 				autoSortAvailable: false,
 				search: false,
@@ -756,6 +793,7 @@
 			var oAddOption = {
 				name: false,
 				value: false,
+				id: false,
 				selected: false,
 				class: false
 			};
@@ -774,6 +812,7 @@
 					$.extend(oAddOption, options);
 
 				var	strEl = "<option " +
+					(oAddOption.id ? "id='" + oAddOption.id + "'" : "") +
 				    "value='" + oAddOption.value + "' " +
 					(oAddOption.class ? "class='" + oAddOption.class + "'" : "") +
 					(oAddOption.selected ? "selected" : "") +
