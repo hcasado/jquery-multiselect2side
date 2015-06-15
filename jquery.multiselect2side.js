@@ -20,6 +20,178 @@
 	};
 
 	var methods = {
+
+		exists: function() {
+			var rval = false;
+			this.each(function() {
+				if ($(this).data('options') != null) {
+					rval = true;
+				}
+			});
+			return rval;
+		},
+
+		unload: function() {
+
+			// the this keyword is a jQuery object
+			return this.each(function() {
+
+				// the this keyword is a DOM element
+				var el = $(this);
+				var originalName = el.attr("name");
+				if (originalName.indexOf('[') != -1)
+					originalName = originalName.substring(0, originalName.indexOf('['));
+				if ($('#' + originalName + ' + .ms2side__div').length > 0) {
+					$('#' + originalName + ' + .ms2side__div').remove();
+					$(this).removeData('options');
+				}
+			});
+		},
+
+		removeOption: function(existingOptionValue) {
+
+			// the this keyword is a jQuery object
+			return this.each(function() {
+
+				// the this keyword is a DOM element
+				var el = $(this);
+				var originalName = el.attr("name");
+				if (originalName.indexOf('[') != -1)
+					originalName = originalName.substring(0, originalName.indexOf('['));
+
+				var allSel = el.next().find("select");
+				allSel.find('option[value="' + existingOptionValue + '"]').remove();
+				el.find('option[value="' + existingOptionValue + '"]').remove();
+			});
+		},
+
+		updateOption: function(existingOptionTextSubstr, newOptionText, newOptionValue) {
+
+			// the this keyword is a jQuery object
+			return this.each(function() {
+
+				// the this keyword is a DOM element
+				var el = $(this);
+				var originalName = el.attr("name");
+				if (originalName.indexOf('[') != -1)
+					originalName = originalName.substring(0, originalName.indexOf('['));
+
+				var o = el.data('options');
+
+				var allSel = el.next().find("select");
+				var leftSel = (o.selectedPosition == 'right') ? allSel.eq(0) : allSel.eq(1);
+				var rightSel = (o.selectedPosition == 'right') ? allSel.eq(1) : allSel.eq(0);
+
+				var changedElement = allSel.find('option:contains("' + existingOptionTextSubstr + '")');
+				changedElement.text(newOptionText);
+				changedElement.val(newOptionValue);
+
+				var origElement = el.find('option:contains("' + existingOptionTextSubstr + '")');
+				origElement.text(newOptionText);
+				origElement.val(newOptionValue);
+			});
+
+		},
+		getSelectedOptions: function() {
+
+			var rval = '';
+
+			// the this keyword is a jQuery object
+			this.each(function() {
+
+				// the this keyword is a DOM element
+				var el = $(this);
+				var o = el.data('options');
+
+				var allSel = el.next().find("select");
+				var rightSel = (o.selectedPosition == 'right') ? allSel.eq(1) : allSel.eq(0);
+				var jqueryObjArray = rightSel.find("option").map(
+					function() {
+						return $(this).val();
+					}
+				);
+				rval = jqueryObjArray.get().join(',');
+			});
+
+			return rval;
+		},
+		getUnselectedOptions: function() {
+
+			var rval = '';
+
+			// the this keyword is a jQuery object
+			this.each(function() {
+
+				// the this keyword is a DOM element
+				var el = $(this);
+				var o = el.data('options');
+
+				var allSel = el.next().find("select");
+				var leftSel = (o.selectedPosition == 'right') ? allSel.eq(0) : allSel.eq(1);
+				var jqueryObjArray = leftSel.find("option").map(
+					function() {
+						return $(this).val();
+					}
+				);
+				rval = jqueryObjArray.get().join(',');
+			});
+
+			return rval;
+		},
+		setSelectedOptions: function(selectedOptions, unselectedOptions) {
+
+			// the this keyword is a jQuery object
+			return this.each(function() {
+
+				// the this keyword is a DOM element
+				var el = $(this);
+
+				var o = el.data('options');
+
+				var allSel = el.next().find("select");
+				var leftSel = (o.selectedPosition == 'right') ? allSel.eq(0) : allSel.eq(1);
+				var rightSel = (o.selectedPosition == 'right') ? allSel.eq(1) : allSel.eq(0);
+
+				// unselect all
+				el.find('option').prop("selected", false);
+
+				// reorder background select
+				var unselectedOptionArray = unselectedOptions.split(",");
+				for (var i = unselectedOptionArray.length - 1; i >= 0; i--) {
+					el.find("[value='" + unselectedOptionArray[i] + "']").remove().prependTo(el);
+				}
+				var selectedOptionArray = selectedOptions.split(",");
+				for (var i = 0; i < selectedOptionArray.length; i++) {
+					el.find("[value='" + selectedOptionArray[i] + "']").prop("selected", true).remove().appendTo(el);
+				}
+
+				el.multiselect2side('update');
+			});
+		},
+		update: function() {
+			// the this keyword is a jQuery object
+			return this.each(function() {
+
+				// the this keyword is a DOM element
+				var el = $(this);
+
+				var o = el.data('options');
+
+				var allSel = el.next().find("select");
+				var leftSel = (o.selectedPosition == 'right') ? allSel.eq(0) : allSel.eq(1);
+				var rightSel = (o.selectedPosition == 'right') ? allSel.eq(1) : allSel.eq(0);
+
+				// clear out both lists
+				rightSel.children().remove();
+				leftSel.children().remove();
+
+				// cause the options in each list to be repopulated based on the
+				// source select
+				el.find("option:selected").clone().appendTo(rightSel);
+				el.find("option:not(:selected)").clone().appendTo(leftSel);
+
+			});
+		},
 		_getHorizontalTwoSidedSelectHtml: function(o, divUpDown, leftSearch, nameSx, size, rightSearch, nameDx)
 		{
 			var htmlToAdd =
@@ -119,9 +291,15 @@
 				horizontal: true
 			};
 
+			// the this keyword is a jQuery object
 			return this.each(function () {
+
+				// the this keyword is a DOM element
 				var	el = $(this);
                 var html = $('html');
+				// store the options for later.
+				$(this).data('options', o);
+
 				var data = el.data('multiselect2side');
 
 				if (options)
@@ -573,14 +751,19 @@
 				el.show().next().remove();
 			});
 		},
+
 		addOption : function(options) {
 			var oAddOption = {
 				name: false,
 				value: false,
-				selected: false
+				selected: false,
+				class: false
 			};
 
+			// the this keyword is a jQuery object
 			return this.each(function () {
+
+				// the this keyword is a DOM element
 				var	el = $(this);
 				var data = el.data('multiselect2side');
 
@@ -590,7 +773,12 @@
 				if (options)
 					$.extend(oAddOption, options);
 
-				var	strEl = "<option value='" + oAddOption.value + "' " + (oAddOption.selected ? "selected" : "") + " >" + oAddOption.name + "</option>";
+				var	strEl = "<option " +
+				    "value='" + oAddOption.value + "' " +
+					(oAddOption.class ? "class='" + oAddOption.class + "'" : "") +
+					(oAddOption.selected ? "selected" : "") +
+					" >" +
+					oAddOption.name + "</option>";
 
 				el.append(strEl);
 
