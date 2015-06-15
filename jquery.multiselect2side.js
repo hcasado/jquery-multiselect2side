@@ -37,45 +37,45 @@
 		return (compA < compB) ? -1 : (compA > compB) ? 1 : 0;
 	}
 
-	function getHorizontalTwoSidedSelectHtml(o, divUpDown, leftSearch, nameSx, size, rightSearch, nameDx)
+	function getHorizontalTwoSidedSelectHtml($underlyingSelect, options, divUpDown, leftSearch, nameSx, nameDx, size, rightSearch)
 	{
-		var htmlSelectSx = getSelectedControl(o, nameSx, size);
-		var htmlSelectDx = getDeselectedControl(o, size, nameDx);
+		var htmlSelectSx = getSxControl($underlyingSelect, options, nameSx, size);
+		var htmlSelectDx = getDxControl($underlyingSelect, options, nameDx, size);
 
 		var htmlToAdd =
 			"<div class='ms2side__div'>" +
-			((o.selectedPosition != 'right' && o.moveOptions) ? divUpDown : "") +
+			((options.selectedPosition != 'right' && options.moveOptions) ? divUpDown : "") +
 			"<div class='ms2side__select'>" +
-			((o.labelsx || leftSearch != false) ? ("<div class='ms2side__header'>" + (leftSearch != false ? leftSearch : o.labelsx) + "</div>") : "") +
+			((options.labelsx || leftSearch != false) ? ("<div class='ms2side__header'>" + (leftSearch != false ? leftSearch : options.labelsx) + "</div>") : "") +
 			htmlSelectSx +
 			"</div>" +
 			"<div class='ms2side__options'>" +
-			((o.selectedPosition == 'right')
+			((options.selectedPosition == 'right')
 				?
-				("<p class='AddOne' title='Add Selected'><img src='/img/BTNArrowRight.png' border='0' /></p>" +
-				"<p class='AddAll' title='Add All'><img src='/img/BTNDoubleArrowRight.png' border='0' /></p>" +
-				"<p class='RemoveOne' title='Remove Selected'><img src='/img/BTNArrowLeft.png' border='0' /></p>" +
-				"<p class='RemoveAll' title='Remove All'><img src='/img/BTNDoubleArrowLeft.png' border='0' /></p>")
+				("<p class='AddOne' title='Add Selected'><img src='/images/BTNArrowRight.png' border='0' /></p>" +
+				"<p class='AddAll' title='Add All'><img src='/images/BTNDoubleArrowRight.png' border='0' /></p>" +
+				"<p class='RemoveOne' title='Remove Selected'><img src='/images/BTNArrowLeft.png' border='0' /></p>" +
+				"<p class='RemoveAll' title='Remove All'><img src='/images/BTNDoubleArrowLeft.png' border='0' /></p>")
 				:
-				("<p class='AddOne' title='Add Selected'>&<img src='/img/BTNArrowLeft.png' border='0' /></p>" +
-				"<p class='AddAll' title='Add All'><img src='/img/BTNDoubleArrowLeft.png' border='0' /></p>" +
-				"<p class='RemoveOne' title='Remove Selected'><img src='/img/BTNArrowRight.png' border='0' /></p>" +
-				"<p class='RemoveAll' title='Remove All'><img src='/img/BTNDoubleArrowRight.png' border='0' /></p>")
+				("<p class='AddOne' title='Add Selected'>&<img src='/images/BTNArrowLeft.png' border='0' /></p>" +
+				"<p class='AddAll' title='Add All'><img src='/images/BTNDoubleArrowLeft.png' border='0' /></p>" +
+				"<p class='RemoveOne' title='Remove Selected'><img src='/images/BTNArrowRight.png' border='0' /></p>" +
+				"<p class='RemoveAll' title='Remove All'><img src='/images/BTNDoubleArrowRight.png' border='0' /></p>")
 			) +
 			"</div>" +
 			"<div class='ms2side__select'>" +
-			((o.labeldx || rightSearch != false) ? ("<div class='ms2side__header'>" + (rightSearch != false ? rightSearch : o.labeldx) + "</div>") : "") +
+			((options.labeldx || rightSearch != false) ? ("<div class='ms2side__header'>" + (rightSearch != false ? rightSearch : options.labeldx) + "</div>") : "") +
 			htmlSelectDx +
 			"</div>" +
-			((o.selectedPosition == 'right' && o.moveOptions) ? divUpDown : "") +
+			((options.selectedPosition == 'right' && options.moveOptions) ? divUpDown : "") +
 			"</div>";
 		return htmlToAdd;
 	}
 
-	function getVerticalTwoSidedSelectHtml(o, divUpDown, leftSearch, nameSx, size, rightSearch, nameDx)
+	function getVerticalTwoSidedSelectHtml($underlyingSelect, o, divUpDown, leftSearch, nameSx, size, rightSearch, nameDx)
 	{
-		var htmlSelectSx = getSelectedControl(o, nameSx, size);
-		var htmlSelectDx = getDeselectedControl(o, size, nameDx);
+		var htmlSelectSx = getSxControl($underlyingSelect, o, nameSx, size);
+		var htmlSelectDx = getDxControl($underlyingSelect, o, nameDx, size);
 
 		var htmlToAdd = "<div class='ms2side__div'>" +
 			((o.selectedPosition != 'right' && o.moveOptions) ? divUpDown : "") +
@@ -88,15 +88,15 @@
 			"<tr valign='middle'>" +
 			((o.selectedPosition == 'right')
 				?
-				("<td><p class='AddOne' title='Add Selected'><img src='/img/BTNDownArrow.png' border='0' /></p></td>" +
-				"<td><p class='AddAll' title='Add All'><img src='/img/BTNdoubledownArrow.png' border='0' /></p></td>" +
-				"<td><p class='RemoveOne' title='Remove Selected'><img src='/img/BTNUpArrow.png' border='0' /></p></td>" +
-				"<td><p class='RemoveAll' title='Remove All'><img src='/img/BTNDoubleUpArrow.png' border='0' /></p></td>")
+				("<td><p class='AddOne' title='Add Selected'><img src='/images/BTNDownArrow.png' border='0' /></p></td>" +
+				"<td><p class='AddAll' title='Add All'><img src='/images/BTNdoubledownArrow.png' border='0' /></p></td>" +
+				"<td><p class='RemoveOne' title='Remove Selected'><img src='/images/BTNUpArrow.png' border='0' /></p></td>" +
+				"<td><p class='RemoveAll' title='Remove All'><img src='/images/BTNDoubleUpArrow.png' border='0' /></p></td>")
 				:
-				("<td><p class='AddOne' title='Add Selected'><img src='/img/BTNUpArrow.png' border='0' /></p></td>" +
-				"<td><p class='AddAll' title='Add All'><img src='/img/BTNDoubleUpArrow.png' border='0' /></p></td>" +
-				"<td><p class='RemoveOne' title='Remove Selected'><img src='/img/BTNDownArrow.png' border='0' /></p></td>" +
-				"<td><p class='RemoveAll' title='Remove All'><img src='/img/BTNdoubledownArrow.png' border='0' /></p></td>")
+				("<td><p class='AddOne' title='Add Selected'><img src='/images/BTNUpArrow.png' border='0' /></p></td>" +
+				"<td><p class='AddAll' title='Add All'><img src='/images/BTNDoubleUpArrow.png' border='0' /></p></td>" +
+				"<td><p class='RemoveOne' title='Remove Selected'><img src='/images/BTNDownArrow.png' border='0' /></p></td>" +
+				"<td><p class='RemoveAll' title='Remove All'><img src='/images/BTNdoubledownArrow.png' border='0' /></p></td>")
 			) +
 			"</tr>" +
 			"</table>" +
@@ -110,19 +110,22 @@
 		return htmlToAdd;
 	}
 
-	function getSelectedControl(o, nameSx, size)
+	function getSxControl($underlyingSelect, options, nameSx, size)
 	{
-		var htmlSelectSx = "<select title='" + o.labelsx + "' name='" + nameSx + "' id='" + nameSx + "' size='" + size + "' multiple='multiple' >";
-		$(this).find("option").each(function(index, option) {
+		var htmlSelectSx = "<select title='" + options.labelsx + "' name='" + nameSx + "' id='" + nameSx + "' size='" + size + "' multiple='multiple' >";
+		$underlyingSelect.find("option").each(function(index, option) {
 			if (option.selected)
 			{
-				if (o.selectedPosition == 'right') {
-					htmlSelectDx += '<option id="' + option.id +
+				if (options.selectedPosition !== 'right') {
+					htmlSelectSx += '<option id="' + option.id +
 					'" class="' + option.className + '"' +
 					'" value="' + option.value + '"' +
 					'>' + option.text + '</option>';
 				}
-				else {
+			}
+			else
+			{
+				if (options.selectedPosition == 'right') {
 					htmlSelectSx += '<option id="' + option.id +
 					'" class="' + option.className + '"' +
 					'" value="' + option.value + '"' +
@@ -132,21 +135,25 @@
 		});
 
 		htmlSelectSx += "</select>";
+		return htmlSelectSx;
 	}
 
-	function getDeselectedControl(o, size, nameDx)
+	function getDxControl($underlyingSelect, options, nameDx, size)
 	{
-		var htmlSelectDx = "<select title='" + o.labeldx + "' name='" + nameDx + "' id='" + nameDx + "' size='" + size + "' multiple='multiple' >";
-		$(this).find("option").each(function(index, option) {
-			if (!option.selected)
+		var htmlSelectDx = "<select title='" + options.labeldx + "' name='" + nameDx + "' id='" + nameDx + "' size='" + size + "' multiple='multiple' >";
+		$underlyingSelect.find("option").each(function(index, option) {
+			if (option.selected)
 			{
-				if (o.selectedPosition == 'right') {
-					htmlSelectSx += '<option id="' + option.id +
+				if (options.selectedPosition == 'right') {
+					htmlSelectDx += '<option id="' + option.id +
 					'" class="' + option.className + '"' +
 					'" value="' + option.value + '"' +
 					'>' + option.text + '</option>';
 				}
-				else {
+			}
+			else
+			{
+				if (options.selectedPosition !== 'right') {
 					htmlSelectDx += '<option id="' + option.id +
 					'" class="' + option.className + '"' +
 					'" value="' + option.value + '"' +
@@ -156,18 +163,19 @@
 		});
 
 		htmlSelectDx += "</select>";
+		return htmlSelectDx;
 	}
 
-	function getTwoSidedSelectHtml(o, divUpDown, leftSearch, nameSx, size, rightSearch, nameDx) {
+	function getTwoSidedSelectHtml($underlyingSelect, options, divUpDown, leftSearch, nameSx, nameDx, size, rightSearch) {
 
 		var htmlToAdd;
-		if (o.horizontal)
+		if (options.horizontal)
 		{
-			htmlToAdd = getHorizontalTwoSidedSelectHtml(o, divUpDown, leftSearch, nameSx, size, rightSearch, nameDx);
+			htmlToAdd = getHorizontalTwoSidedSelectHtml($underlyingSelect, options, divUpDown, leftSearch, nameSx, nameDx, size, rightSearch);
 		}
 		else
 		{
-			htmlToAdd = getVerticalTwoSidedSelectHtml(o, divUpDown, leftSearch, nameSx, size, rightSearch, nameDx);
+			htmlToAdd = getVerticalTwoSidedSelectHtml($underlyingSelect, options, divUpDown, leftSearch, nameSx, size, rightSearch, nameDx);
 		}
 		return htmlToAdd;
 	}
@@ -487,7 +495,7 @@
 				}
 
 				// CREATE NEW ELEMENT (AND HIDE IT) AFTER THE HIDDEN ORIGINAL SELECT
-				var htmlToAdd = getTwoSidedSelectHtml(o, divUpDown, leftSearch, nameSx, size, rightSearch, nameDx);
+				var htmlToAdd = getTwoSidedSelectHtml(el, o, divUpDown, leftSearch, nameSx, nameDx, size, rightSearch);
 				el.after(htmlToAdd).hide();
 
 				// ELEMENTS
