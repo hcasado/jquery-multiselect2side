@@ -230,6 +230,8 @@
 					allSel.find('option[value="' + existingOption + '"]').remove();
 					el.find('option[value="' + existingOption + '"]').remove();
 				}
+				el.trigger('change');
+				allSel.trigger('change');
 			});
 		},
 
@@ -726,6 +728,7 @@
 							el.find("[value='" + $(selected).val() + "']").remove().appendTo(el).prop("selected", true);
 						}
 					});
+					el.trigger('change');
 					$(this).trigger('change');
 				});
 
@@ -735,6 +738,7 @@
 						$(this).remove().appendTo(leftSel);
 						el.find("[value='" + $(selected).val() + "']").prop("selected", false).remove().appendTo(el);
 					});
+					el.trigger('change');
 					$(this).trigger('change');
 
 					// TRIGGER CHANGE AND VALUE NULL FORM OPTGROUP SEARCH (IF EXIST)
@@ -844,6 +848,7 @@
 						}
 					}
 
+					el.trigger('change');
 					leftSel.trigger('change');
 				});
 
