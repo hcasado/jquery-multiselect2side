@@ -21,6 +21,16 @@
 
 	var methods = {
 
+		hide: function() {
+			return this.each(function() {
+				$(this).next().hide();
+			});
+		},
+		show: function() {
+			return this.each(function() {
+				$(this).next().show();
+			});
+		},
 		exists: function() {
 			var rval = false;
 			this.each(function() {
@@ -168,6 +178,7 @@
 
 				// the this keyword is a DOM element
 				var el = $(this);
+				var originalId = $(this).attr("id");
 
 				var o = el.data('options');
 				var useOptionIDs = o.useOptionIDs;
@@ -178,27 +189,15 @@
 				// unselect all
 				el.find('option').prop("selected", false);
 
-				// reorder background select
-				var unselectedOptionArray = unselectedOptions.split(",");
-				for (var i = unselectedOptionArray.length - 1; i >= 0; i--) {
-
-					if (useOptionIDs) {
-						el.find("[id='" + unselectedOptionArray[i] + "']").remove().prependTo(el);
-					}
-					else {
-						el.find("[value='" + unselectedOptionArray[i] + "']").remove().prependTo(el);
-					}
-				}
 				var selectedOptionArray = selectedOptions.split(",");
 				for (var i = 0; i < selectedOptionArray.length; i++) {
 
 					if (useOptionIDs) {
-						el.find("[id='" + selectedOptionArray[i] + "']").prop("selected", true).remove().appendTo(el);
+						$('#' + originalId + ' option[id="' + selectedOptionArray[i] + '"]').prop("selected", true).remove().appendTo(el);
 					}
 					else {
-						el.find("[value='" + selectedOptionArray[i] + "']").prop("selected", true).remove().appendTo(el);
+						$('#' + originalId + ' option[value="' + selectedOptionArray[i] + '"]').prop("selected", true).remove().appendTo(el);
 					}
-
 				}
 
 				el.multiselect2side('update');
@@ -230,12 +229,15 @@
 		},
 		_getHorizontalTwoSidedSelectHtml: function(o, divUpDown, leftSearch, nameSx, size, rightSearch, nameDx)
 		{
+			var htmlSelectSx = this.getSelectedControl(o, divUpDown, leftSearch, nameSx, size, rightSearch, nameDx);
+			var htmlSelectDx = this.getDeselectedControl(o, divUpDown, leftSearch, nameSx, size, rightSearch, nameDx);
+
 			var htmlToAdd =
 				"<div class='ms2side__div'>" +
 				((o.selectedPosition != 'right' && o.moveOptions) ? divUpDown : "") +
 				"<div class='ms2side__select'>" +
 				((o.labelsx || leftSearch != false) ? ("<div class='ms2side__header'>" + (leftSearch != false ? leftSearch : o.labelsx) + "</div>") : "") +
-				"<select title='" + o.labelsx + "' name='" + nameSx + "' id='" + nameSx + "' size='" + size + "' multiple='multiple' ></select>" +
+				htmlSelectSx +
 				"</div>" +
 				"<div class='ms2side__options'>" +
 				((o.selectedPosition == 'right')
@@ -253,7 +255,7 @@
 				"</div>" +
 				"<div class='ms2side__select'>" +
 				((o.labeldx || rightSearch != false) ? ("<div class='ms2side__header'>" + (rightSearch != false ? rightSearch : o.labeldx) + "</div>") : "") +
-				"<select title='" + o.labeldx + "' name='" + nameDx + "' id='" + nameDx + "' size='" + size + "' multiple='multiple' ></select>" +
+				htmlSelectDx +
 				"</div>" +
 				((o.selectedPosition == 'right' && o.moveOptions) ? divUpDown : "") +
 				"</div>";
@@ -261,11 +263,14 @@
 		},
 		_getVerticalTwoSidedSelectHtml: function(o, divUpDown, leftSearch, nameSx, size, rightSearch, nameDx)
 		{
+			var htmlSelectSx = this.getSelectedControl(o, divUpDown, leftSearch, nameSx, size, rightSearch, nameDx);
+			var htmlSelectDx = this.getDeselectedControl(o, divUpDown, leftSearch, nameSx, size, rightSearch, nameDx);
+
 			var htmlToAdd = "<div class='ms2side__div'>" +
 				((o.selectedPosition != 'right' && o.moveOptions) ? divUpDown : "") +
 				"<div class='ms2side__select'>" +
 				((o.labelsx || leftSearch != false) ? ("<div class='ms2side__header'>" + (leftSearch != false ? leftSearch : o.labelsx) + "</div>") : "") +
-				"<select title='" + o.labelsx + "' name='" + nameSx + "' id='" + nameSx + "' size='" + size + "' multiple='multiple' ></select>" +
+				htmlSelectSx +
 				"</div>" +
 				"<div class='ms2side__options' style='width:75%;'>" +
 				"<table width='100%' border='0' cellspacing='0' cellpadding='0' class='MultiSelectButtonTable'>" +
@@ -287,13 +292,60 @@
 				"</div>" +
 				"<div class='ms2side__select'>" +
 				((o.labeldx || rightSearch != false) ? ("<div class='ms2side__header'>" + (rightSearch != false ? rightSearch : o.labeldx) + "</div>") : "") +
-				"<select title='" + o.labeldx + "' name='" + nameDx + "' id='" + nameDx + "' size='" + size + "' multiple='multiple' ></select>" +
+				htmlSelectDx +
 				"</div>" +
 				((o.selectedPosition == 'right' && o.moveOptions) ? divUpDown : "") +
 				"</div>";
 			return htmlToAdd;
 		},
+		_getSelectedControl: function(o, divUpDown, leftSearch, nameSx, size, rightSearch, nameDx)
+		{
+			var htmlSelectSx = "<select title='" + o.labelsx + "' name='" + nameSx + "' id='" + nameSx + "' size='" + size + "' multiple='multiple' >";
+			$(this).find("option").each(function(index, option) {
+				if (option.selected)
+				{
+					if (o.selectedPosition == 'right') {
+						htmlSelectDx += '<option id="' + option.id +
+						'" class="' + option.className + '"' +
+						'" value="' + option.value + '"' +
+						'>' + option.text + '</option>';
+					}
+					else {
+						htmlSelectSx += '<option id="' + option.id +
+						'" class="' + option.className + '"' +
+						'" value="' + option.value + '"' +
+						'>' + option.text + '</option>';
+					}
+				}
+			});
+
+			htmlSelectSx += "</select>";
+		},
+		_getDeselectedControl: function(o, divUpDown, leftSearch, nameSx, size, rightSearch, nameDx)
+		{
+			var htmlSelectDx = "<select title='" + o.labeldx + "' name='" + nameDx + "' id='" + nameDx + "' size='" + size + "' multiple='multiple' >";
+			$(this).find("option").each(function(index, option) {
+				if (!option.selected)
+				{
+					if (o.selectedPosition == 'right') {
+						htmlSelectSx += '<option id="' + option.id +
+						'" class="' + option.className + '"' +
+						'" value="' + option.value + '"' +
+						'>' + option.text + '</option>';
+					}
+					else {
+						htmlSelectDx += '<option id="' + option.id +
+						'" class="' + option.className + '"' +
+						'" value="' + option.value + '"' +
+						'>' + option.text + '</option>';
+					}
+				}
+			});
+
+			htmlSelectDx += "</select>";
+		},
 		_getTwoSidedSelectHtml: function (o, divUpDown, leftSearch, nameSx, size, rightSearch, nameDx) {
+
 			var htmlToAdd;
 			if (o.horizontal)
 			{
@@ -533,11 +585,11 @@
 					var	top = ((heightDiv/2) - ($(this).height()/2));
 					if (top > 0)
 						$(this).css('padding-top',  top + 'px' );
-				})
+				});
 
 				// MOVE SELECTED OPTION TO RIGHT, NOT SELECTED TO LEFT
-				$(this).find("option:selected").clone().appendTo(rightSel); // .removeAttr("selected");
-				$(this).find("option:not(:selected)").clone().appendTo(leftSel);
+				//$(this).find("option:selected").clone().appendTo(rightSel); // .removeAttr("selected");
+				//$(this).find("option:not(:selected)").clone().appendTo(leftSel);
 
 				// SELECT FIRST LEFT ITEM AND DESELECT IN RIGHT (NOT IN IE6)
                 // jQuery browser is removed, check now requires html boilerplate
