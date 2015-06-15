@@ -895,7 +895,7 @@
 				value: false,
 				id: false,
 				selected: false,
-				class: false
+				optionClass: false
 			};
 
 			// the this keyword is a jQuery object
@@ -914,7 +914,7 @@
 				var	strEl = "<option " +
 					(oAddOption.id ? "id='" + oAddOption.id + "'" : "") +
 				    "value='" + oAddOption.value + "' " +
-					(oAddOption.class ? "class='" + oAddOption.class + "'" : "") +
+					(oAddOption.optionClass ? "class='" + oAddOption.optionClass + "'" : "") +
 					(oAddOption.selected ? "selected" : "") +
 					" >" +
 					oAddOption.name + "</option>";
