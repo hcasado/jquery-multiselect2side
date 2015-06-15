@@ -32,15 +32,15 @@
 				"<div class='ms2side__options'>" +
 				((o.selectedPosition == 'right')
 					?
-					("<p class='AddOne' title='Add Selected'>&rsaquo;</p>" +
-					"<p class='AddAll' title='Add All'>&raquo;</p>" +
-					"<p class='RemoveOne' title='Remove Selected'>&lsaquo;</p>" +
-					"<p class='RemoveAll' title='Remove All'>&laquo;</p>")
+					("<p class='AddOne' title='Add Selected'><img src='/images/BTNArrowRight.png' border='0' /></p>" +
+					"<p class='AddAll' title='Add All'><img src='/images/BTNDoubleArrowRight.png' border='0' /></p>" +
+					"<p class='RemoveOne' title='Remove Selected'><img src='/images/BTNArrowLeft.png' border='0' /></p>" +
+					"<p class='RemoveAll' title='Remove All'><img src='/images/BTNDoubleArrowLeft.png' border='0' /></p>")
 					:
-					("<p class='AddOne' title='Add Selected'>&lsaquo;</p>" +
-					"<p class='AddAll' title='Add All'>&laquo;</p>" +
-					"<p class='RemoveOne' title='Remove Selected'>&rsaquo;</p>" +
-					"<p class='RemoveAll' title='Remove All'>&raquo;</p>")
+					("<p class='AddOne' title='Add Selected'>&<img src='/images/BTNArrowLeft.png' border='0' /></p>" +
+					"<p class='AddAll' title='Add All'><img src='/images/BTNDoubleArrowLeft.png' border='0' /></p>" +
+					"<p class='RemoveOne' title='Remove Selected'><img src='/images/BTNArrowRight.png' border='0' /></p>" +
+					"<p class='RemoveAll' title='Remove All'><img src='/images/BTNDoubleArrowRight.png' border='0' /></p>")
 				) +
 				"</div>" +
 				"<div class='ms2side__select'>" +
@@ -64,15 +64,15 @@
 				"<tr valign='middle'>" +
 				((o.selectedPosition == 'right')
 					?
-					("<td><p class='AddOne' title='Add Selected'>&rsaquo;</p></td>" +
-					"<td><p class='AddAll' title='Add All'>&raquo;</p></td>" +
-					"<td><p class='RemoveOne' title='Remove Selected'>&lsaquo;</p></td>" +
-					"<td><p class='RemoveAll' title='Remove All'>&laquo;</p></td>")
+					("<td><p class='AddOne' title='Add Selected'><img src='/images/BTNDownArrow.png' border='0' /></p></td>" +
+					"<td><p class='AddAll' title='Add All'><img src='/images/BTNdoubledownArrow.png' border='0' /></p></td>" +
+					"<td><p class='RemoveOne' title='Remove Selected'><img src='/images/BTNUpArrow.png' border='0' /></p></td>" +
+					"<td><p class='RemoveAll' title='Remove All'><img src='/images/BTNDoubleUpArrow.png' border='0' /></p></td>")
 					:
-					("<td><p class='AddOne' title='Add Selected'>&lsaquo;</p></td>" +
-					"<td><p class='AddAll' title='Add All'>&laquo;</p></td>" +
-					"<td><p class='RemoveOne' title='Remove Selected'>&rsaquo;</p></td>" +
-					"<td><p class='RemoveAll' title='Remove All'>&raquo;</p></td>")
+					("<td><p class='AddOne' title='Add Selected'><img src='/images/BTNUpArrow.png' border='0' /></p></td>" +
+					"<td><p class='AddAll' title='Add All'><img src='/images/BTNDoubleUpArrow.png' border='0' /></p></td>" +
+					"<td><p class='RemoveOne' title='Remove Selected'><img src='/images/BTNDownArrow.png' border='0' /></p></td>" +
+					"<td><p class='RemoveAll' title='Remove All'><img src='/images/BTNdoubledownArrow.png' border='0' /></p></td>")
 				) +
 				"</tr>" +
 				"</table>" +
