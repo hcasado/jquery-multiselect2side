@@ -790,6 +790,7 @@
 						}
 					}
 
+					el.trigger('change');
 					leftSel.trigger('change');
 				});
 
