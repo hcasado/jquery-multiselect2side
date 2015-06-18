@@ -37,6 +37,16 @@
 		return (compA < compB) ? -1 : (compA > compB) ? 1 : 0;
 	}
 
+	function clearTextFilterResults(ms2side)
+	{
+		ms2side.find("input.optionSearchInput").next().click();
+	}
+
+	function clearOptGroupFilterResults(ms2side)
+	{
+		ms2side.find('select.optGroupSearchSelect').val("__null__").change();
+	}
+
 	function getDivUpDown(config)
 	{
 		// UP AND DOWN
@@ -56,7 +66,7 @@
 		var controls = '';
 		if (config.horizontal)
 		{
-			if (config.selectedPosition == 'right')
+			if (config.positionOfIncluded == 'right')
 			{
 				controls =
 					"<p class='AddOne' title='Add Selected'><img src='/img/BTNArrowRight.png' border='0' /></p>" +
@@ -75,7 +85,7 @@
 		}
 		else
 		{
-			if (config.selectedPosition == 'right')
+			if (config.positionOfIncluded == 'right')
 			{
 				controls =
 					"<td><p class='AddOne' title='Add Selected'><img src='/img/BTNDownArrow.png' border='0' /></p></td>" +
@@ -102,8 +112,8 @@
 
 		var htmlToAdd =
 			"<div class='ms2side__div'>" +
-				((config.selectedPosition != 'right' && config.moveOptions) ? divUpDown : "") +
-				"<div class='ms2side__select'>" +
+				((config.positionOfIncluded != 'right' && config.moveOptions) ? divUpDown : "") +
+				"<div class='ms2side__select_container'>" +
 					getSelectHeader(config, 'left') +
 					getSearchbox(config, 'left') +
 					getSelectHtml($underlyingSelect, config, leftSelectLabel, size, 'left') +
@@ -111,12 +121,12 @@
 				"<div class='ms2side__options'>" +
 					getSelectionControls(config) +
 				"</div>" +
-				"<div class='ms2side__select'>" +
+				"<div class='ms2side__select_container'>" +
 					getSelectHeader(config, 'right') +
 					getSearchbox(config, 'right') +
 					getSelectHtml($underlyingSelect, config, rightSelectLabel, size, 'right') +
 				"</div>" +
-				((config.selectedPosition == 'right' && config.moveOptions) ? divUpDown : "") +
+				((config.positionOfIncluded == 'right' && config.moveOptions) ? divUpDown : "") +
 			"</div>";
 		return htmlToAdd;
 	}
@@ -124,7 +134,7 @@
 	function getSelectHeader(config, targetPosition) {
 
 		var searchTogglingElements = '';
-		if (config.selectedPosition != targetPosition)
+		if (config.positionOfIncluded != targetPosition)
 		{
 			if (config.optGroupSearch)
 			{
@@ -140,7 +150,7 @@
 		var header =
 			"<div class='ms2side__header'>" +
 				searchTogglingElements +
-				(targetPosition === 'right' ? config.labelRightSide : config.labelLeftSide) +
+				(targetPosition === 'right' ? config.labelIncluded : config.labelAvailable) +
 			"</div>";
 
 		return header;
@@ -152,8 +162,8 @@
 
 		var htmlToAdd =
 			"<div class='ms2side__div'>" +
-				((config.selectedPosition != 'right' && config.moveOptions) ? divUpDown : "") +
-				"<div class='ms2side__select'>" +
+				((config.positionOfIncluded != 'right' && config.moveOptions) ? divUpDown : "") +
+				"<div class='ms2side__select_container'>" +
 					getSelectHeader(config, 'left') +
 					getSearchbox(config, 'left') +
 					getSelectHtml($underlyingSelect, config, leftSelectName, size, 'left') +
@@ -165,12 +175,12 @@
 					"</tr>" +
 					"</table>" +
 				"</div>" +
-				"<div class='ms2side__select'>" +
+				"<div class='ms2side__select_container'>" +
 					getSelectHeader(config, 'right') +
 					getSearchbox(config, 'right') +
 					getSelectHtml($underlyingSelect, config, rightSelectName, size, 'right') +
 				"</div>" +
-				((config.selectedPosition == 'right' && config.moveOptions) ? divUpDown : "") +
+				((config.positionOfIncluded == 'right' && config.moveOptions) ? divUpDown : "") +
 			"</div>";
 		return htmlToAdd;
 	}
@@ -178,7 +188,8 @@
 	function getSelectHtml($underlyingSelect, config, selectName, size, targetPosition)
 	{
 		var selectHtml = "<select " +
-			"title='" + (targetPosition === 'right' ? config.labelRightSide : config.labelLeftSide) + "' " +
+			"title='" + (targetPosition === 'right' ? config.labelIncluded : config.labelAvailable) + "' " +
+			"class='ms2side__select'" +
 			"name='" + selectName  + "' " +
 			"id='" + selectName  + "' " +
 			"size='" + size  + "' " +
@@ -186,7 +197,7 @@
 		$underlyingSelect.find("option").each(function(index, option) {
 			if (option.selected)
 			{
-				if (config.selectedPosition === targetPosition) {
+				if (config.positionOfIncluded === targetPosition) {
 					selectHtml += '<option id="' + option.id + '" ' +
 					'class="' + option.className + '" ' +
 					'value="' + option.value + '" ' +
@@ -195,7 +206,7 @@
 			}
 			else
 			{
-				if (config.selectedPosition !== targetPosition) {
+				if (config.positionOfIncluded !== targetPosition) {
 					selectHtml += '<option id="' + option.id + '" ' +
 					'class="' + option.className  + '" ' +
 					'value="' + option.value + '"' +
@@ -226,7 +237,7 @@
 	{
 		var searchHtml = "";
 
-		if (config.selectedPosition != targetPosition)
+		if (config.positionOfIncluded != targetPosition)
 		{
 			searchHtml =
 				"<div style='display:none; padding-top:1%;' class='optGroupSearchElement'>" +
@@ -237,7 +248,7 @@
 		}
 
 
-		if (config.selectedPosition != targetPosition)
+		if (config.positionOfIncluded != targetPosition)
 		{
 			searchHtml +=
 				"<div style='display:none; padding-top:1%;' class='optionSearchElement'>" +
@@ -249,14 +260,30 @@
 		return searchHtml;
 	}
 
-	function setupSearchCapabilities(config, el, leftSel)
+	function getOptionGroups(el)
+	{
+		var optGroupLabels = el.children("option").map(
+			function (index, domElement) {
+				return $(domElement).data('optgroup');
+			}
+		).get();
+		var uniqueOptGroupLabels = optGroupLabels.filter(
+			function(label, index, srcArray)
+			{
+				return index == srcArray.indexOf(label);
+			}
+		);
+		return uniqueOptGroupLabels;
+	}
+
+	function setupSearchCapabilities(config, el, availableSelect)
 	{
 		// SELECT optgroup
-		var searchSelect = $();
+		var optGroupSelect = $();
 
 		// SEARCH INPUT
-		var searchInput = el.next().find("input:text");
-		var removeFilter = searchInput.next().hide();
+		var optionSearchInput = el.next().find("input.optionSearchInput");
+		var clearOptionSearchButton = optionSearchInput.next().hide();
 		var toid = false;
 		var searchV = false;
 
@@ -264,70 +291,77 @@
 		if (config.optGroupSearch != false) {
 			var lastOptGroupSearch = false;
 
-			searchSelect = el.next().find("select").eq(0);
+			optGroupSelect = el.next().find("select.optGroupSearchSelect").eq(0);
 
-			el.children("optgroup").each(function () {
-				if (searchSelect.find("[value='" + $(this).attr("label") + "']").size() == 0)
-					searchSelect.append("<option value='" + $(this).attr("label") + "'>" + $(this).attr("label") + "</option>");
+			var optGroups = getOptionGroups(el);
+			optGroups.forEach(function (optGroup) {
+				if (optGroupSelect.find("[value='" + optGroup + "']").size() == 0)
+					optGroupSelect.append("<option value='" + optGroup + "'>" + optGroup + "</option>");
 			});
-			searchSelect.change(function () {
+
+			optGroupSelect.change(function () {
 				var sEl = $(this);
 
 				if (sEl.val() != lastOptGroupSearch) {
 
 					// IF EXIST SET SEARCH TEXT TO VOID
-					if (searchInput.val() != "") {
+					if (optionSearchInput.val() != "") {
 						clearTimeout(toid);
-						removeFilter.hide();
-						searchInput.val("");//.trigger('keyup');
+						clearOptionSearchButton.hide();
+						optionSearchInput.val("");//.trigger('keyup');
 						searchV = "";
-						// fto();
+						// filterTheOptions();
 					}
 
-					setTimeout(function () {
-						if (sEl.val() == "__null__") {
-							els = el.find("option:not(:selected)");
-						}
-						else
-							els = el.find("optgroup[label='" + sEl.val() + "']").children("option:not(:selected)");
+					setTimeout(
+						function ()
+						{
+							var optionsInThisGroup = el.find("option:not(:selected)");
+							if (sEl.val() != "__null__")
+							{
+								optionsInThisGroup = optionsInThisGroup.filter(
+									function() { return $(this).data('optgroup') == sEl.val(); }
+								);
+							}
 
-						// REMOVE ORIGINAL ELEMENTS AND ADD OPTION OF OPTGROUP SELECTED
-						leftSel.find("option").remove();
-						els.each(function () {
-							leftSel.append($(this).clone());
-						});
-						lastOptGroupSearch = sEl.val();
-						leftSel.trigger('change');
-					}, 100);
+							// REMOVE ORIGINAL ELEMENTS AND ADD OPTION OF OPTGROUP SELECTED
+							availableSelect.find("option").remove();
+							optionsInThisGroup.each(function () {
+								availableSelect.append($(this).clone(true).off());
+							});
+							lastOptGroupSearch = sEl.val();
+							availableSelect.trigger('change');
+						},
+						100
+					);
 				}
 			});
 		}
 
 
 		// SEARCH FUNCTION
-		var fto = function () {
-			var els = leftSel.children();
+		var filterTheOptions = function () {
+			var els = availableSelect.children();
 			var toSearch = el.find("option:not(:selected)");
 
 			// RESET OptGroupSearch
-			lastOptGroupSearch = "__null__";
-			searchSelect.val("__null__");
+			clearOptGroupFilterResults(el.next());
 
-			if (searchV == searchInput.val())
+			if (searchV == optionSearchInput.val())
 				return;
 
-			searchInput
+			optionSearchInput
 				.addClass("wait")
 				.attr("style", '');
 
-			searchV = searchInput.val();
+			searchV = optionSearchInput.val();
 
 			// A LITTLE TIMEOUT TO VIEW WAIT CLASS ON INPUT ON IE
 			setTimeout(function () {
-				leftSel.children().remove();
+				availableSelect.children().remove();
 				if (searchV == "") {
-					toSearch.clone().appendTo(leftSel).prop("selected", false);
-					removeFilter.hide();
+					toSearch.clone(true).off().appendTo(availableSelect).prop("selected", false);
+					clearOptionSearchButton.hide();
 				}
 				else {
 					toSearch.each(function () {
@@ -340,65 +374,110 @@
 							find = myText.toUpperCase().indexOf(searchV.toUpperCase());
 
 						if (find != -1)
-							$(this).clone().appendTo(leftSel).prop("selected", false);
+							$(this).clone(true).off().appendTo(availableSelect).prop("selected", false);
 					});
 
-					if (leftSel.children().length == 0)
-						searchInput.css({'border': '1px red solid'});
+					if (availableSelect.children().length == 0)
+						optionSearchInput.css({'border': '1px red solid'});
 
-					removeFilter.show();
-					leftSel.trigger('change');
+					clearOptionSearchButton.show();
+					availableSelect.trigger('change');
 				}
-				leftSel.trigger('change');
-				searchInput.removeClass("wait");
+				availableSelect.trigger('change');
+				optionSearchInput.removeClass("wait");
 			}, 5);
 		};
 
 		// REMOVE FILTER ON SEARCH FUNCTION
-		removeFilter.click(function () {
+		clearOptionSearchButton.click(function () {
 			clearTimeout(toid);
-			searchInput.val("");
-			fto();
+			optionSearchInput.val("");
+			filterTheOptions();
 			return false;
 		});
 
 		// ON CHANGE TEXT INPUT
-		searchInput.keyup(function () {
+		optionSearchInput.keyup(function () {
 			clearTimeout(toid);
-			toid = setTimeout(fto, config.delay);
+			toid = setTimeout(filterTheOptions, config.delay);
 		});
 
-		return searchSelect;
+		return optGroupSelect;
 	}
 
-	function ensureSelectedHeightSameAsAvailable()
+	function ensureBothSelectsAreSameHeight()
 	{
-		var thisDiv = $(this).closest('.ms2side__select');
+		var thisDiv = $(this).closest('.ms2side__select_container');
 		var thisDivHeight = thisDiv.prop('offsetHeight');
-		var otherDiv = thisDiv.siblings('.ms2side__select');
+		var otherDiv = thisDiv.siblings('.ms2side__select_container');
 		otherDiv.css('height', thisDivHeight);
 		var otherDivHeaderHeight = otherDiv.find('.ms2side__header').prop('offsetHeight');
-		otherDiv.find('select').css('height', thisDivHeight - otherDivHeaderHeight);
+		otherDiv.find('select.ms2side__select').css('height', thisDivHeight - otherDivHeaderHeight);
 	}
 
-	function toggleOptionSearchElementVisibility()
+	function toggleOptionSearchElementVisibility(el)
 	{
-		$(this).closest('.ms2side__div').find('.optionSearchElement').toggle();
-		ensureSelectedHeightSameAsAvailable.call(this);
+		var ms2side = el.next();
+		var optionSearchDiv = ms2side.find('.optionSearchElement');
+		optionSearchDiv.toggle();
+		if (optionSearchDiv.is(':visible'))
+		{
+			var optGroupSearchDiv = ms2side.find('.optGroupSearchElement');
+			clearOptGroupFilterResults(ms2side);
+			optGroupSearchDiv.hide();
+		}
+		ensureBothSelectsAreSameHeight.call(this);
+		el.trigger('heightchange');
 	}
 
-	function toggleOptGroupSearchElementVisibility()
+	function toggleOptGroupSearchElementVisibility(el)
 	{
-		$(this).closest('.ms2side__div').find('.optGroupSearchElement').toggle();
-		ensureSelectedHeightSameAsAvailable.call(this);
+		var ms2side = el.next();
+		var optGroupSearchDiv = ms2side.find('.optGroupSearchElement');
+		optGroupSearchDiv.toggle();
+		if (optGroupSearchDiv.is(':visible'))
+		{
+			clearTextFilterResults(ms2side);
+			var optionSearchDiv = ms2side.find('.optionSearchElement');
+			optionSearchDiv.hide();
+		}
+		ensureBothSelectsAreSameHeight.call(this);
+		el.trigger('heightchange');
 	}
 
+
+	function convertGroupedOptions(el)
+	{
+		el.find('option').each(
+			function(index, optionElement)
+			{
+				var optGroup = $(optionElement).closest('optgroup');
+				if (optGroup.length > 0)
+				{
+					$(optionElement).data('optgroup', optGroup.attr('label'));
+				}
+				$(optionElement).detach().appendTo(el);
+			}
+		);
+		el.children('optgroup').remove();
+	}
 
 	function addTwoSidedSelect (el, config, nameLeftSide, nameRightSide, size) {
+		convertGroupedOptions(el);
 		var htmlToAdd = getTwoSidedSelectHtml(el, config, nameLeftSide, nameRightSide, size);
 		el.after(htmlToAdd).hide();
-		el.parent().find('.toggleOptGroupSearchElements').on('click', toggleOptGroupSearchElementVisibility);
-		el.parent().find('.toggleOptionSearchElements').on('click', toggleOptionSearchElementVisibility);
+		el.parent().find('.toggleOptGroupSearchElements').on('click', partial(toggleOptGroupSearchElementVisibility, el));
+		el.parent().find('.toggleOptionSearchElements').on('click', partial(toggleOptionSearchElementVisibility, el));
+	}
+
+	function getSelectSize(el, config) {
+		var size = el.prop("size");
+		// SIZE MIN
+		if (size < config.minSize) {
+			el.prop("size", config.minSize);
+			size = config.minSize;
+		}
+		return size;
 	}
 
 	var methods = {
@@ -450,7 +529,7 @@
 
 				var useOptionIDs = el.data('config').useOptionIDs;
 
-				var allSel = $(this).next().find("select");
+				var allSel = $(this).next().find("select.ms2side__select");
 				if (useOptionIDs) {
 					allSel.find('option[id="' + existingOption + '"]').remove();
 					el.find('option[id="' + existingOption + '"]').remove();
@@ -459,8 +538,12 @@
 					allSel.find('option[value="' + existingOption + '"]').remove();
 					el.find('option[value="' + existingOption + '"]').remove();
 				}
+
+				clearTextFilterResults(el.next());
+				clearOptGroupFilterResults(el.next());
 				el.trigger('change');
 				allSel.trigger('change');
+
 			});
 		},
 
@@ -473,7 +556,7 @@
 
 				var useOptionIDs = el.data('config').useOptionIDs;
 
-				var allSel = el.next().find("select");
+				var allSel = el.next().find("select.ms2side__select");
 
 				var changedElement = '';
 				if (useOptionIDs) {
@@ -494,6 +577,9 @@
 				}
 				origElement.text(newOptionText);
 				origElement.val(newOptionValue);
+
+				clearTextFilterResults(el.next());
+				clearOptGroupFilterResults(el.next());
 			});
 
 		},
@@ -509,9 +595,10 @@
 				var config = el.data('config');
 				var useOptionIDs = config.useOptionIDs;
 
-				var allSel = el.next().find("select");
-				var rightSel = (config.selectedPosition == 'right') ? allSel.eq(1) : allSel.eq(0);
-				var jqueryObjArray = rightSel.find("option").map(
+				var allSel = el.next().find("select.ms2side__select");
+				var includedSelect = (config.positionOfIncluded == 'right') ? allSel.eq(1) : allSel.eq(0);
+
+				var jqueryObjArray = includedSelect.find("option").map(
 					function() {
 						if (useOptionIDs) {
 							return $(this).attr('id');
@@ -538,9 +625,9 @@
 				var config = el.data('config');
 				var useOptionIDs = config.useOptionIDs;
 
-				var allSel = el.next().find("select");
-				var leftSel = (config.selectedPosition == 'right') ? allSel.eq(0) : allSel.eq(1);
-				var jqueryObjArray = leftSel.find("option").map(
+				var allSel = el.next().find("select.ms2side__select");
+				var availableSelect = (config.positionOfIncluded == 'right') ? allSel.eq(0) : allSel.eq(1);
+				var jqueryObjArray = availableSelect.find("option").map(
 					function() {
 						if (useOptionIDs) {
 							return $(this).attr('id');
@@ -566,9 +653,6 @@
 
 				var config = el.data('config');
 				var useOptionIDs = config.useOptionIDs;
-				var allSel = el.next().find("select");
-				var leftSel = (config.selectedPosition == 'right') ? allSel.eq(0) : allSel.eq(1);
-				var rightSel = (config.selectedPosition == 'right') ? allSel.eq(1) : allSel.eq(0);
 
 				// unselect all
 				el.find('option').prop("selected", false);
@@ -576,10 +660,10 @@
 				var unselectedOptionArray = unselectedOptions.split(",");
 				for (var i = unselectedOptionArray.length - 1; i >= 0; i--) {
 					if (useOptionIDs) {
-						$('#' + originalId + ' option[id="' + unselectedOptionArray[i] + '"]').prop("selected", true).remove().appendTo(el);
+						$('#' + originalId + ' option[id="' + unselectedOptionArray[i] + '"]').prop("selected", true).detach().appendTo(el);
 					}
 					else {
-						$('#' + originalId + ' option[value="' + unselectedOptionArray[i] + '"]').prop("selected", true).remove().appendTo(el);
+						$('#' + originalId + ' option[value="' + unselectedOptionArray[i] + '"]').prop("selected", true).detach().appendTo(el);
 					}
 				}
 
@@ -587,10 +671,10 @@
 				for (var i = 0; i < selectedOptionArray.length; i++) {
 
 					if (useOptionIDs) {
-						$('#' + originalId + ' option[id="' + selectedOptionArray[i] + '"]').prop("selected", true).remove().appendTo(el);
+						$('#' + originalId + ' option[id="' + selectedOptionArray[i] + '"]').prop("selected", true).detach().appendTo(el);
 					}
 					else {
-						$('#' + originalId + ' option[value="' + selectedOptionArray[i] + '"]').prop("selected", true).remove().appendTo(el);
+						$('#' + originalId + ' option[value="' + selectedOptionArray[i] + '"]').prop("selected", true).detach().appendTo(el);
 					}
 				}
 
@@ -606,34 +690,37 @@
 				el.next().hide();
 				var config = el.data('config');
 
-				var allSel = el.next().find("select");
-				var leftSel = (config.selectedPosition == 'right') ? allSel.eq(0) : allSel.eq(1);
-				var rightSel = (config.selectedPosition == 'right') ? allSel.eq(1) : allSel.eq(0);
+				var allSel = el.next().find("select.ms2side__select");
+				var availableSelect = (config.positionOfIncluded == 'right') ? allSel.eq(0) : allSel.eq(1);
+				var includedSelect = (config.positionOfIncluded == 'right') ? allSel.eq(1) : allSel.eq(0);
 
 				// clear out both lists
-				rightSel.children().remove();
-				leftSel.children().remove();
+				includedSelect.children().remove();
+				availableSelect.children().remove();
 
 				// cause the options in each list to be repopulated based on the
 				// source select
-				el.find("option:selected").clone().appendTo(rightSel);
-				el.find("option:not(:selected)").clone().appendTo(leftSel);
+				el.find("option:selected").clone(true).off().appendTo(includedSelect);
+				el.find("option:not(:selected)").clone(true).off().appendTo(availableSelect);
 				el.next().show();
+
+				clearTextFilterResults(el.next());
+				clearOptGroupFilterResults(el.next());
+
 			});
 		},
 
 		init : function(userConfig) {
 			var config = {
-				selectedPosition: 'right',
+				positionOfIncluded: 'right',
 				moveOptions: true,
 				labelTop: 'Top',
 				labelBottom: 'Bottom',
 				labelUp: 'Up',
 				labelDown: 'Down',
 				labelSort: 'Sort',
-				labelLeftSide: 'Available',
-				labelRightSide: 'Selected',
-				maxSelected: -1,
+				labelAvailable: 'Available',
+				labelIncluded: 'Included',
 				useOptionIDs: false,
 				autoSort: false,
 				autoSortAvailable: false,
@@ -666,25 +753,23 @@
 				if (originalName.indexOf('[') != -1)
 					originalName = originalName.substring(0, originalName.indexOf('['));
 
-				var nameRightSide = originalName + "ms2side__dx";
-				var nameLeftSide = originalName + "ms2side__sx";
-				var size = $(this).attr("size");
-				// SIZE MIN
-				if (size < config.minSize) {
-					$(this).attr("size", "" + config.minSize);
-					size = config.minSize;
-				}
+				var nameRightSide = "ms2side__rightSide" + originalName;
+				var nameLeftSide = "ms2side__leftSide" + originalName;
+
+				var size = getSelectSize(el, config);
 
 				// CREATE NEW ELEMENT (AND HIDE IT) AFTER THE HIDDEN ORIGINAL SELECT
 				addTwoSidedSelect(el, config, nameLeftSide, nameRightSide, size);
-				// ELEMENTS
-				var allSel = el.next().children(".ms2side__select").children("select");
-				var leftSel = (config.selectedPosition == 'right') ? allSel.eq(0) : allSel.eq(1);
-				var rightSel = (config.selectedPosition == 'right') ? allSel.eq(1) : allSel.eq(0);
-				// HEIGHT DIV
-				var heightDiv = $(".ms2side__select").eq(0).height();
 
-				var searchSelect = setupSearchCapabilities(config, el, leftSel);
+				// ELEMENTS
+				var allSel = el.next().find("select.ms2side__select");
+				var availableSelect = (config.positionOfIncluded == 'right') ? allSel.eq(0) : allSel.eq(1);
+				var includedSelect = (config.positionOfIncluded == 'right') ? allSel.eq(1) : allSel.eq(0);
+
+				// HEIGHT DIV
+				var heightDiv = $(".ms2side__select_container").eq(0).height();
+
+				var searchSelect = setupSearchCapabilities(config, el, availableSelect);
 				var removeFilter = el.next().find("input:text").next();
 
 				// CENTER MOVE OPTIONS AND UPDOWN OPTIONS
@@ -698,27 +783,27 @@
 				// jQuery browser is removed, check now requires html boilerplate
 				// conditions html comments https://github.com/h5bp/html5-boilerplate/blob/v4.3.0/doc/html.md
 				if (!(html.hasClass('ie6') || html.hasClass('le-ie7') || html.hasClass('ielte7'))) {
-					leftSel.find("option").eq(0).prop("selected", true);
-					rightSel.children().prop("selected", false);
+					availableSelect.find("option").eq(0).prop("selected", true);
+					includedSelect.children().prop("selected", false);
 				}
 
 				// ON CHANGE SORT SELECTED OPTIONS
 				var nLastAutosort = 0;
 				if (config.autoSort)
 					allSel.change(function () {
-						var selectRight = rightSel.find("option");
+						var selectedOption = includedSelect.find("option");
 
-						if (selectRight.length != nLastAutosort) {
+						if (selectedOption.length != nLastAutosort) {
 							// SORT SELECTED ELEMENT
-							selectRight.sort(config.useOptionIDs ? internalIdSort : internalTextSort);
+							selectedOption.sort(config.useOptionIDs ? internalIdSort : internalTextSort);
 							// FIRST REMOVE FROM ORIGINAL SELECT
 							el.find("option:selected").remove();
 							// AFTER ADD ON ORIGINAL AND RIGHT SELECT
-							selectRight.each(function () {
-								rightSel.append($(this).clone());
+							selectedOption.each(function () {
+								includedSelect.append($(this).clone(true).off());
 								$(this).appendTo(el).prop("selected", true);
 							});
-							nLastAutosort = selectRight.length;
+							nLastAutosort = selectedOption.length;
 						}
 					});
 
@@ -726,85 +811,91 @@
 				var nLastAutosortAvailable = 0;
 				if (config.autoSortAvailable)
 					allSel.change(function () {
-						var selectLeft = leftSel.find("option");
+						var availableOptions = availableSelect.find("option");
 
-						if (selectLeft.length != nLastAutosortAvailable) {
+						if (availableOptions.length != nLastAutosortAvailable) {
 							// SORT SELECTED ELEMENT
-							selectLeft.sort(config.useOptionIDs ? internalIdSort : internalTextSort);
+							availableOptions.sort(config.useOptionIDs ? internalIdSort : internalTextSort);
 							// REMOVE ORIGINAL ELEMENTS AND ADD SORTED
-							leftSel.find("option").remove();
-							selectLeft.each(function () {
-								leftSel.append($(this).clone());
+							availableSelect.find("option").remove();
+							availableOptions.each(function () {
+								availableSelect.append($(this).clone(true).off());
 							});
-							nLastAutosortAvailable = selectLeft.length;
+							nLastAutosortAvailable = availableOptions.length;
 						}
 					});
 
 				// ON CHANGE REFRESH ALL BUTTON STATUS
 				allSel.change(function () {
-					var div = $(this).parent().parent();
-					var selectLeft = leftSel.children();
-					var selectRight = rightSel.children();
-					var selectedLeft = leftSel.find("option:selected");
-					var selectedRight = rightSel.find("option:selected");
+					var div = $(this).closest('.ms2side__div');
+					var availableOptions = availableSelect.find("option");
+					var selectedAvailableOptions = availableSelect.find("option:selected");
+					var includedOptions = includedSelect.find("option");
+					var selectedIncludedOptions = includedSelect.find("option:selected");
 
-					if (selectedLeft.size() == 0 ||
-						(config.maxSelected >= 0 && (selectedLeft.size() + selectRight.size()) > config.maxSelected))
+					if (selectedAvailableOptions.size() == 0)
 						div.find(".AddOne").addClass('ms2side__hide');
 					else
 						div.find(".AddOne").removeClass('ms2side__hide');
 
 					// FIRST HIDE ALL
 					div.find(".RemoveOne, .MoveUp, .MoveDown, .MoveTop, .MoveBottom, .SelSort").addClass('ms2side__hide');
-					if (selectRight.size() > 1)
+
+					if (includedOptions.length > 1)
 						div.find(".SelSort").removeClass('ms2side__hide');
-					if (selectedRight.size() > 0) {
+
+					if (selectedIncludedOptions.length > 0)
+					{
 						div.find(".RemoveOne").removeClass('ms2side__hide');
+
 						// ALL SELECTED - NO MOVE
-						if (selectedRight.size() < selectRight.size()) {	// FOR NOW (JOE) && selectedRight.size() == 1
-							if (selectedRight.val() != selectRight.val())	// FIRST OPTION, NO UP AND TOP BUTTON
+						if (selectedIncludedOptions.length < includedOptions.length)
+						{
+							// FIRST OPTION, NO UP AND TOP BUTTON
+							if (selectedIncludedOptions.first().val() != includedOptions.first().val())
 								div.find(".MoveUp, .MoveTop").removeClass('ms2side__hide');
-							if (selectedRight.last().val() != selectRight.last().val())	// LAST OPTION, NO DOWN AND BOTTOM BUTTON
+
+							// LAST OPTION, NO DOWN AND BOTTOM BUTTON
+							if (selectedIncludedOptions.last().val() != includedOptions.last().val())
 								div.find(".MoveDown, .MoveBottom").removeClass('ms2side__hide');
 						}
 					}
 
-					if (selectLeft.size() == 0 ||
-						(config.maxSelected >= 0 && selectLeft.size() >= config.maxSelected))
+					if (availableOptions.length == 0)
 						div.find(".AddAll").addClass('ms2side__hide');
 					else
 						div.find(".AddAll").removeClass('ms2side__hide');
 
-					if (selectRight.size() == 0)
+					if (includedOptions.length == 0)
 						div.find(".RemoveAll").addClass('ms2side__hide');
 					else
 						div.find(".RemoveAll").removeClass('ms2side__hide');
 				});
 
 				// DOUBLE CLICK ON LEFT SELECT OPTION
-				leftSel.dblclick(function () {
+				availableSelect.dblclick(function () {
 					$(this).find("option:selected").each(function (i, selected) {
 
-						if (config.maxSelected < 0 || rightSel.children().size() < config.maxSelected) {
-							$(this).remove().appendTo(rightSel);
-							el.find("[value='" + $(selected).val() + "']").remove().appendTo(el).prop("selected", true);
-						}
+						$(this).detach().appendTo(includedSelect);
+						el.find("[value='" + $(selected).val() + "']").detach().appendTo(el).prop("selected", true);
+
 					});
 					el.trigger('change');
 					$(this).trigger('change');
 				});
 
 				// DOUBLE CLICK ON RIGHT SELECT OPTION
-				rightSel.dblclick(function () {
+				includedSelect.dblclick(function () {
 					$(this).find("option:selected").each(function (i, selected) {
-						$(this).remove().appendTo(leftSel);
-						el.find("[value='" + $(selected).val() + "']").prop("selected", false).remove().appendTo(el);
+						$(this).detach().appendTo(availableSelect);
+						el.find("[value='" + $(selected).val() + "']").prop("selected", false).detach().appendTo(el);
 					});
 					el.trigger('change');
 					$(this).trigger('change');
 
 					// TRIGGER CHANGE AND VALUE NULL FORM OPTGROUP SEARCH (IF EXIST)
 					searchSelect.val("__null__").trigger("change");
+
 					// TRIGGER CLICK ON REMOVE FILTER (IF EXIST)
 					removeFilter.click();
 				});
@@ -813,98 +904,101 @@
 				$(this).next().find('.AddOne, .AddAll, .RemoveOne, .RemoveAll').click(function () {
 					if (!$(this).hasClass("ms2side__hide")) {
 						if ($(this).hasClass("AddOne")) {
-							leftSel.find("option:selected").each(function (i, selected) {
-								$(this).remove().appendTo(rightSel);
-								el.find("[value='" + $(selected).val() + "']").remove().appendTo(el).prop("selected", true);
+							availableSelect.find("option:selected").each(function (i, selected) {
+								$(this).detach().appendTo(includedSelect);
+								el.find("[value='" + $(selected).val() + "']").detach().appendTo(el).prop("selected", true);
 							});
 						}
 						else if ($(this).hasClass("AddAll")) {	// ALL SELECTED
 							// TEST IF HAVE A FILTER OR A SELECT OPTGROUP
 							if (removeFilter.is(":visible") || (searchSelect.length > 0 && searchSelect.val() != "__null__"))
-								leftSel.children().each(function (i, selected) {
-									$(this).remove().appendTo(rightSel);
-									el.find("[value='" + $(selected).val() + "']").remove().appendTo(el).prop("selected", true);
+								availableSelect.children().each(function (i, selected) {
+									$(this).remove().appendTo(includedSelect);
+									el.find("[value='" + $(selected).val() + "']").detach().appendTo(el).prop("selected", true);
 								});
 							else {
-								leftSel.children().remove().appendTo(rightSel);
+								availableSelect.children().detach().appendTo(includedSelect);
 								el.find('option').prop("selected", true);
 							}
 						}
 						else if ($(this).hasClass("RemoveOne")) {
-							rightSel.find("option:selected").each(function (i, selected) {
-								$(this).remove().appendTo(leftSel);
-								el.find("[value='" + $(selected).val() + "']").remove().appendTo(el).prop("selected", false);
+							includedSelect.find("option:selected").each(function (i, selected) {
+								$(this).detach().appendTo(availableSelect);
+								el.find("[value='" + $(selected).val() + "']").detach().appendTo(el).prop("selected", false);
 							});
 							// TRIGGER CLICK ON REMOVE FILTER (IF EXIST)
 							removeFilter.click();
+
 							// TRIGGER CHANGE AND VALUE NULL FORM OPTGROUP SEARCH (IF EXIST)
 							searchSelect.val("__null__").trigger("change");
 						}
 						else if ($(this).hasClass("RemoveAll")) {	// ALL REMOVED
-							rightSel.children().appendTo(leftSel);
-							rightSel.children().remove();
+							includedSelect.children().appendTo(availableSelect);
+							includedSelect.children().remove();
 							el.find('option').prop("selected", false);
-							//el.children().removeAttr("selected"); -- PROBLEM WITH OPTGROUP
+
 							// TRIGGER CLICK ON REMOVE FILTER (IF EXIST)
 							removeFilter.click();
+
 							// TRIGGER CHANGE AND VALUE NULL FORM OPTGROUP SEARCH (IF EXIST)
 							searchSelect.val("__null__").trigger("change");
 						}
 					}
 
 					el.trigger('change');
-					leftSel.trigger('change');
+					availableSelect.trigger('change');
 				});
 
 				// CLICK ON UP - DOWN
 				$(this).next().find('.ms2side__updown').children().click(function () {
-					var selectedRight = rightSel.find("option:selected");
-					var selectRight = rightSel.find("option");
+
+					var selectedIncludedOptions = includedSelect.find("option:selected");
+					var includedOptions = includedSelect.find("option");
 
 					if (!$(this).hasClass("ms2side__hide")) {
 						if ($(this).hasClass("SelSort")) {
 							// SORT SELECTED ELEMENT
-							selectRight.sort(config.useOptionIDs ? internalIdSort : internalTextSort);
+							includedOptions.sort(config.useOptionIDs ? internalIdSort : internalTextSort);
 							// FIRST REMOVE FROM ORIGINAL SELECT
 							el.find("option:selected").remove();
 							// AFTER ADD ON ORIGINAL AND RIGHT SELECT
-							selectRight.each(function () {
-								rightSel.append($(this).clone().prop("selected", true));
+							includedOptions.each(function () {
+								includedSelect.append($(this).clone(true).off().prop("selected", true));
 								el.append($(this).prop("selected", true));
 							});
 						}
 						else if ($(this).hasClass("MoveUp")) {
-							var prev = selectedRight.first().prev();
+							var prev = selectedIncludedOptions.first().prev();
 							var hPrev = el.find("[value='" + prev.val() + "']");
 
-							selectedRight.each(function () {
+							selectedIncludedOptions.each(function () {
 								$(this).insertBefore(prev);
 								el.find("[value='" + $(this).val() + "']").insertBefore(hPrev);	// HIDDEN SELECT
 							});
 						}
 						else if ($(this).hasClass("MoveDown")) {
-							var next = selectedRight.last().next();
+							var next = selectedIncludedOptions.last().next();
 							var hNext = el.find("[value='" + next.val() + "']");
 
-							selectedRight.each(function () {
+							selectedIncludedOptions.each(function () {
 								$(this).insertAfter(next);
 								el.find("[value='" + $(this).val() + "']").insertAfter(hNext);	// HIDDEN SELECT
 							});
 						}
 						else if ($(this).hasClass("MoveTop")) {
-							var first = selectRight.first();
+							var first = includedOptions.first();
 							var hFirst = el.find("[value='" + first.val() + "']");
 
-							selectedRight.each(function () {
+							selectedIncludedOptions.each(function () {
 								$(this).insertBefore(first);
 								el.find("[value='" + $(this).val() + "']").insertBefore(hFirst);	// HIDDEN SELECT
 							});
 						}
 						else if ($(this).hasClass("MoveBottom")) {
-							var last = selectRight.last();
+							var last = includedOptions.last();
 							var hLast = el.find("[value='" + last.val() + "']");
 
-							selectedRight.each(function () {
+							selectedIncludedOptions.each(function () {
 								last = $(this).insertAfter(last);	// WITH last = SAME POSITION OF SELECTED OPTION AFTER MOVE
 								hLast = el.find("[value='" + $(this).val() + "']").insertAfter(hLast);	// HIDDEN SELECT
 							});
@@ -912,7 +1006,7 @@
 					}
 
 					el.trigger('change');
-					leftSel.trigger('change');
+					availableSelect.trigger('change');
 				});
 
 				// HOVER ON OPTION
@@ -926,7 +1020,7 @@
 				);
 
 				// UPDATE BUTTON ON START
-				leftSel.trigger('change');
+				availableSelect.trigger('change');
 				// SHOW WHEN ALL READY
 				$(this).next().show();
 			});
@@ -949,7 +1043,8 @@
 				value: false,
 				id: false,
 				selected: false,
-				optionClass: false
+				optionClass: false,
+				optGroup: false
 			};
 
 			// the this keyword is a jQuery object
@@ -962,28 +1057,39 @@
 				if (!data)
 					return;
 
+				var config = el.data('config');
+
 				if (options)
 					$.extend(oAddOption, options);
 
-				var	strEl = "<option " +
+				var	newOption = $("<option " +
 					(oAddOption.id ? "id='" + oAddOption.id + "'" : "") +
 				    "value='" + oAddOption.value + "' " +
 					(oAddOption.optionClass ? "class='" + oAddOption.optionClass + "'" : "") +
 					(oAddOption.selected ? "selected" : "") +
 					" >" +
-					oAddOption.name + "</option>";
+					oAddOption.name +
+					"</option>");
 
-				el.append(strEl);
+				el.append(newOption);
+
+				if (options.optGroup)
+				{
+					newOption.data('optgroup', options.optGroup);
+				}
 
 				// ELEMENTS
-				var allSel = el.next().children(".ms2side__select").children("select");
-				var	leftSel = (data.selectedPosition == 'right') ? allSel.eq(0) : allSel.eq(1);
-				var	rightSel = (data.selectedPosition == 'right') ? allSel.eq(1) : allSel.eq(0);
+				var allSel = el.next().find("select.ms2side__select");
+				var availableSelect = (config.positionOfIncluded == 'right') ? allSel.eq(0) : allSel.eq(1);
+				var includedSelect = (config.positionOfIncluded == 'right') ? allSel.eq(1) : allSel.eq(0);
+
+				clearTextFilterResults(el.next());
+				clearOptGroupFilterResults(el.next());
 
 				if (oAddOption.selected)
-					rightSel.append(strEl).trigger('change');
+					includedSelect.append(newOption.clone(true).off()).trigger('change');
 				else
-					leftSel.append(strEl).trigger('change');
+					availableSelect.append(newOption.clone(true).off()).trigger('change');
 			});
 		}
 	};

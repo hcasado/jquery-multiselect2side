@@ -17,7 +17,7 @@
     text-align: center;
 }
 
-.MultiSelect .ms2side__select {
+.MultiSelect .ms2side__select_container {
     width: 100%;
 }
 
@@ -30,7 +30,7 @@
     padding-top: 2em !important;
 }
 
-.ms2side__select {
+.ms2side__select_container {
 	float: left;
 	border:1px solid #888;
 }
@@ -88,6 +88,8 @@
 .optGroupSearchSelect {
     display:block;
     margin-left:2%;
+    margin-top:1%;
+    margin-bottom:1%;
     width:94% !important;
 }
 
@@ -95,12 +97,4 @@
 	width: 220px;
 	float: left;
 }
-
-.ui-icon {
-    display: block;
-    text-indent: -99999px;
-    overflow: hidden;
-    background-repeat: no-repeat;
-}
-
 
